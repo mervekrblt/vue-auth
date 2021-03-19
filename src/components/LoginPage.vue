@@ -1,8 +1,15 @@
 <template>
-  <div>Merve</div>
-  <welcome-page v-if="$store.state.login"></welcome-page>
 
-  <button @click="userLogin"></button>
+  <section v-if="!$store.state.login">
+    <form @submit.prevent="userLogin">
+      <input type="text" placeholder="username" ref="username">
+      <input type="text" placeholder="password" v-model="password">
+      <button></button>
+    </form>
+  </section>
+
+  <welcome-page v-else></welcome-page>
+
 </template>
 
 <script>
@@ -10,25 +17,21 @@ import WelcomePage from './WelcomePage'
 
 export default {
   name: 'LoginPage',
-  provide(){
-        return {
-            name:this.name
-        }
-    },
-
-  data() {
-    return {
-      name: 'abc'
-    }
-  },
 
   components: {
     WelcomePage
   },
 
+  data() {
+    return {
+      password: '',
+    }
+  },
+
   methods: {
     userLogin() {
       this.$store.state.login = true
+      this.$store.state.username = this.$refs.username.value
     }
   }
 }
