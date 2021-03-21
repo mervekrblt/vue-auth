@@ -50,7 +50,8 @@ export default {
         // console.log(user)
       }
     }
-  }
+  },
+
 }
 </script>
 

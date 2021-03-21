@@ -11,6 +11,8 @@ export default {
   components: {
     LoginPage
   },
+
+
 };
 </script>
 

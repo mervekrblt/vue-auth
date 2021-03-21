@@ -14,23 +14,35 @@ export default createStore({
       state.user = payload
       // console.log('stateuser',state.user)
       state.login = true
-    }
+    },
   },
 
   actions: {
     async userLogin(context, payload) {
       // console.log(context, payload)
-      try {
-          await axios.post('https://aodapi.eralpsoftware.net/login/apply', {
+      await axios.post('https://aodapi.eralpsoftware.net/login/apply', {
             username: payload.email,
-            password: payload.password
+            password: payload.password,
+            email: payload.email
           })
-      
+
+          .then(response => {
+
+          // set token to local with crypto.js
+          const encToken = CryptoJS.AES.encrypt(response.data.token, 'secret key 123').toString();
+          localStorage.setItem('token', encToken)
+
+          axios.defaults.headers.common['Authorization'] = response.data.token
+          
           context.commit('userLogin', payload)
-      }
-      catch(err) {
+
+          const decrypToken = CryptoJS.AES.decrypt(encToken, "secret key 123").toString(CryptoJS.enc.Utf8)
+          console.log(response.data.token, decrypToken, encToken)
+          })
+
+          .catch(err => {
           alert(err)
-      }
+          })
     }
   },
 
@@ -39,6 +51,7 @@ export default createStore({
     return state.user
   }
   },
+
   modules: {
   }
 })
