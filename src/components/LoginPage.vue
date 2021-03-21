@@ -1,22 +1,22 @@
 <template>
 
-  <section v-if="!$store.state.login">
-    <form @submit.prevent="userLogin">
-      <input type="text" placeholder="username" ref="username">
+  <section>
+    <form @submit.prevent="userAuth">
+      <input type="text" placeholder="username" v-model="username">
       <input type="email" placeholder="email" v-model="email">
       <input type="password" placeholder="password" v-model="password">
       <button>Login</button>
     </form>
   </section>
 
-  <welcome-page v-else></welcome-page>
+  <welcome-page></welcome-page>
   
 </template>
 
 <script>
 import WelcomePage from './WelcomePage'
-import axios from 'axios'
-import CryptoJS from "crypto-js";
+import { mapActions } from 'vuex'
+
 
 export default {
   name: 'LoginPage',
@@ -27,33 +27,31 @@ export default {
 
   data() {
     return {
+      username: '',
       email: '',
       password: ''
     }
   },
 
   methods: {
-    async userLogin() {
+    ...mapActions(['userLogin']),
 
-      const response = await axios.post('https://aodapi.eralpsoftware.net/login/apply', {
-        username: this.email,
+    userAuth() {
+      const user = {
+        username: this.username,
+        email: this.email,
         password: this.password
-      })
-        this.$store.state.login = true
-        this.$store.state.username = this.$refs.username.value
+      }
 
-        
-        const encToken = CryptoJS.AES.encrypt(response.data.token, 'secret key 123').toString();
-        const decrypToken = CryptoJS.AES.decrypt(encToken, "secret key 123").toString(CryptoJS.enc.Utf8)
-        console.log(encToken)
-        console.log(decrypToken, localStorage.getItem('token'))
-        console.log(response.data.token)
-
-        localStorage.setItem('token', encToken)
-
-        axios.defaults.headers.common['Authorization'] = 'Bearer' + localStorage.getItem('token')
+      if(this.username.trim() === '' || this.email.trim() === '' || this.password === ''){
+        alert("Inputs can not be empty")
+      }else {
+        this.userLogin(user)
+        // console.log(user)
+      }
     }
-  }
+  },
+
 }
 </script>
 
